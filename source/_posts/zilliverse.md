@@ -313,9 +313,9 @@ if (blinkFrames <= -STATIC_BLINK_FRAMES) {
 
 #### Let camera moves more smoothly
 
-If we need move camera from position A to B, we can divide the pocession into a number of pieces, and camera only complete one piece movement in one frame. Smaller the piece is, more smoothly.
+If we need move camera from position A to B, we can divide the process into a number of pieces, and camera only complete one piece movement in one frame. Smaller the piece is, more smoothly.
 
-Besides, we need to change the camera angle to fit the movement, so we can divide the pocession as same as above.
+Besides, we need to change the camera angle to fit the movement, so we can divide the process as same as above.
 
 ```javascript
 function lookAtObj(camera, object) {
@@ -329,7 +329,7 @@ function lookAtObj(camera, object) {
 ```javascript
 let movingCamera = false;
 let camCurrnetStep = 0;
-let camSpeed = 128; // One movement pocession will be divided into 128 pieces.
+let camSpeed = 128; // One movement process will be divided into 128 pieces.
 
 // function render() {
 // ...
