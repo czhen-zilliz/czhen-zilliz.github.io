@@ -148,7 +148,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://czhen-zilliz.github.io/2021/09/08/zilliverse/">
+    <link itemprop="mainEntityOfPage" href="https://czhen-zilliz.github.io/2021/12/06/texlive/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -162,7 +162,107 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/08/zilliverse/" class="post-title-link" itemprop="url">Implement Universe by Three.js</a>
+            <a href="/2021/12/06/texlive/" class="post-title-link" itemprop="url">Using pandoc to build pdf with toc in github action</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-12-06 11:54:15 / Modified: 00:00:00" itemprop="dateCreated datePublished" datetime="2021-12-06T11:54:15+08:00">2021-12-06</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Using-pandoc-to-build-pdf-with-toc-in-github-action"><a href="#Using-pandoc-to-build-pdf-with-toc-in-github-action" class="headerlink" title="Using pandoc to build pdf with toc in github action"></a>Using pandoc to build pdf with toc in github action</h1><p>[toc]</p>
+<h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p>This doc is written based on below listed version, any updates please refer to offical doc.<br>pandoc 2.16.2 (2021-11-21).<br>tlmgr revision 60693 (2021-10-04).<br>fnm 1.28.1 installed with node v17.2.0.</p>
+<p>sample project: <a target="_blank" rel="noopener" href="https://github.com/zilliztech/docs.zilliz.com">https://github.com/zilliztech/docs.zilliz.com</a><br>sample docker: <a target="_blank" rel="noopener" href="https://hub.docker.com/repository/docker/xiaohongczh/xelatex">https://hub.docker.com/repository/docker/xiaohongczh/xelatex</a></p>
+<h2 id="Prepare-source-content"><a href="#Prepare-source-content" class="headerlink" title="Prepare source content"></a>Prepare source content</h2><p>Pandoc supports various format doc transformation. (see <a target="_blank" rel="noopener" href="https://pandoc.org/index.html">https://pandoc.org/index.html</a>). It extract doc title as toc entry. Like #, ##, ###… in markdown or h1, h2, h3…in html. Before we generate pdf, we have to reformat doc with proper doc title so that the pdf toc will meet our requirement.<br>Or<br>Another way is to use latex syntax to build a toc template and import this template while pandoc building process. We would not discussion latex syntax here.</p>
+<h2 id="Build-docker"><a href="#Build-docker" class="headerlink" title="Build docker"></a>Build docker</h2><p>To run pandoc in github action, a docker image is required. We may need different packages to build pdf. Offical image may need extra installation. So we build a customized image on ourselves. </p>
+<h3 id="Start-a-base-ubuntu-image"><a href="#Start-a-base-ubuntu-image" class="headerlink" title="Start a base ubuntu image"></a>Start a base ubuntu image</h3><p>Start a minized Ubuntu image:<br><code>docker run -it -v ~/Documents/docker_vol_01:/docker_vol_01 ubuntu bash</code></p>
+<h3 id="Install-pandoc"><a href="#Install-pandoc" class="headerlink" title="Install pandoc"></a>Install pandoc</h3><p>Download deb package from <a target="_blank" rel="noopener" href="https://github.com/jgm/pandoc/releases/">github</a></p>
+<h3 id="Install-texlive"><a href="#Install-texlive" class="headerlink" title="Install texlive"></a>Install texlive</h3><p>Since we need to use xelatex as pdf build engine (default pdf engine is pdflatex which does not support some unicode like Chinese character or emoji well), texlive is a must to be installed.</p>
+<p>Here is <a target="_blank" rel="noopener" href="https://tug.org/texlive/acquire.html">some ways</a> of installing texlive</p>
+<p>The <a target="_blank" rel="noopener" href="https://tug.org/texlive/acquire-mirror.html">Mirroring/downloading the TeX Live repository</a> is the most stable and the only way that I succeeded.</p>
+<p>Chose proper <a target="_blank" rel="noopener" href="https://ctan.org/mirrors">site</a><br>and<br>rsync -a –delete rsync://somectan/somepath/systems/texlive/tlnet/ /your/local/dir/<br>or<br>wget –mirror –no-parent <a href="ftp://somectan/somepath/systems/texlive/tlnet/">ftp://somectan/somepath/systems/texlive/tlnet/</a> /your/local/dir</p>
+<p><em>This step might take dozens of hours, so be prepared in advanced.</em></p>
+<h3 id="Remove-useless-code"><a href="#Remove-useless-code" class="headerlink" title="Remove useless code"></a>Remove useless code</h3><ol>
+<li>Get into <code>/usr/local/texlive/2021</code></li>
+<li>Run <code>du -sh ./*</code> <code>doc</code> folder is around 4GB.</li>
+<li>Remove <code>doc</code> folder</li>
+</ol>
+<h3 id="Install-nodejs-optional"><a href="#Install-nodejs-optional" class="headerlink" title="Install nodejs (optional)"></a>Install nodejs (optional)</h3><p>We need script runtime to excute jobs. We chose nodejs to run jobs and fnm to install node.</p>
+<p>You can pick any language you prefered and install them on this image.</p>
+<h3 id="Config-env-variables"><a href="#Config-env-variables" class="headerlink" title="Config env variables"></a>Config env variables</h3><p>Check .bashrc ro .bash_profile if PATH is proplerly configured.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> texlive</span></span><br><span class="line">export PATH=/usr/local/texlive/2021/bin/x86_64-linux:$PATH</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> fnm</span></span><br><span class="line">export PATH=/root/.fnm:$PATH</span><br><span class="line">eval &quot;$(fnm env)&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Check-every-thing-is-ready"><a href="#Check-every-thing-is-ready" class="headerlink" title="Check every thing is ready"></a>Check every thing is ready</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pandoc -v</span><br><span class="line">tlmgr --version</span><br><span class="line">fnm list</span><br><span class="line">node -v</span><br></pre></td></tr></table></figure>
+
+<h3 id="Sample-pandoc-script-to-generate-pdf"><a href="#Sample-pandoc-script-to-generate-pdf" class="headerlink" title="Sample pandoc script to generate pdf"></a>Sample pandoc script to generate pdf</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pandoc --toc --toc-depth=2 --verbose -s  --resource-path=src -f markdown+link_attributses -V geometry:&quot;left=2cm, top=2cm, right=2cm, bottom=2cm&quot; -V title=&quot;Test PDF&quot; -V mainfont=&quot;Symbola&quot; -V CJKmainfont=&quot;AR PL SungtiL GB&quot;  --pdf-engine=xelatex -o  test_cn.pdf src/test.md</span><br></pre></td></tr></table></figure>
+
+<p>Important arguments:</p>
+<ul>
+<li><code>--toc</code> means generate pdf with toc</li>
+<li><code>--toc-depth=2</code> means extrac only top 2 level title as toc (h1 and h2 or # and ##)</li>
+<li><code>--verbose</code> print all logs while generate</li>
+<li><code>--resource-path</code> the the relative path for build pdf. If you have some relateive linked asset or resources like image in source file, add the argument.</li>
+<li><code>-V</code> add some extra argument like:<ul>
+<li><code>geometry</code> actuall size of pdf file</li>
+<li><code>title</code> pdf title</li>
+<li><code>mainfont</code> main font for pdf</li>
+<li><code>CJKmainfont</code> main font for CJK characters in pdf</li>
+</ul>
+</li>
+<li><code>--pdf-engine</code> pdf generate engine</li>
+<li><code>-o</code> output file path and file name</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://czhen-zilliz.github.io/2021/12/06/zilliverse/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="czhen">
+      <meta itemprop="description" content="Tech Sharing">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog - czhen-zilliz">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/06/zilliverse/" class="post-title-link" itemprop="url">Implement Universe by Three.js</a>
         </h2>
 
         <div class="post-meta">
@@ -172,7 +272,7 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-09-08 11:15:29" itemprop="dateCreated datePublished" datetime="2021-09-08T11:15:29+08:00">2021-09-08</time>
+              <time title="Created: 2021-12-06 11:54:15" itemprop="dateCreated datePublished" datetime="2021-12-06T11:54:15+08:00">2021-12-06</time>
             </span>
 
           
@@ -261,7 +361,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://czhen-zilliz.github.io/2021/09/08/milvus_cli/">
+    <link itemprop="mainEntityOfPage" href="https://czhen-zilliz.github.io/2021/12/06/milvus_cli/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -275,7 +375,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/08/milvus_cli/" class="post-title-link" itemprop="url">Implement Milvus CLI by Python Click</a>
+            <a href="/2021/12/06/milvus_cli/" class="post-title-link" itemprop="url">Implement Milvus CLI by Python Click</a>
         </h2>
 
         <div class="post-meta">
@@ -285,7 +385,7 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-09-08 11:15:29" itemprop="dateCreated datePublished" datetime="2021-09-08T11:15:29+08:00">2021-09-08</time>
+              <time title="Created: 2021-12-06 11:54:15" itemprop="dateCreated datePublished" datetime="2021-12-06T11:54:15+08:00">2021-12-06</time>
             </span>
 
           
@@ -522,7 +622,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
