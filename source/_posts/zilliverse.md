@@ -1,5 +1,6 @@
 ---
 title: Implement Universe by Three.js
+updated: 2021-09-08
 ---
 
 # Implement Universe by Three.js
