@@ -1,5 +1,6 @@
 ---
 title: Implement Milvus CLI by Python Click
+date: 2021-09-08
 ---
 
 # Implement Milvus CLI by Python Click

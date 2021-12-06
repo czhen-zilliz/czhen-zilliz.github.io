@@ -1,6 +1,5 @@
 ---
 title: Using pandoc to build pdf with toc in github action
-updated: 2021-12-08
 date: 2021-12-08
 ---
 
