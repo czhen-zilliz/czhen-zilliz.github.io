@@ -179,7 +179,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-06 12:10:24" itemprop="dateModified" datetime="2021-12-06T12:10:24+08:00">2021-12-06</time>
+                <time title="Modified: 2021-12-07 14:47:00" itemprop="dateModified" datetime="2021-12-07T14:47:00+08:00">2021-12-07</time>
               </span>
 
           
@@ -206,9 +206,10 @@
 <p>Chose proper <a target="_blank" rel="noopener" href="https://ctan.org/mirrors">site</a><br>and<br>rsync -a –delete rsync://somectan/somepath/systems/texlive/tlnet/ /your/local/dir/<br>or<br>wget –mirror –no-parent <a href="ftp://somectan/somepath/systems/texlive/tlnet/">ftp://somectan/somepath/systems/texlive/tlnet/</a> /your/local/dir</p>
 <p><em>This step might take dozens of hours, so be prepared in advanced.</em></p>
 <h3 id="Remove-useless-code"><a href="#Remove-useless-code" class="headerlink" title="Remove useless code"></a>Remove useless code</h3><ol>
-<li>Get into <code>/usr/local/texlive/2021</code></li>
-<li>Run <code>du -sh ./*</code> <code>doc</code> folder is around 4GB.</li>
-<li>Remove <code>doc</code> folder</li>
+<li>Get into <code>/usr/local/texlive/2021/texmf-dist</code>.</li>
+<li>Run <code>du -sh ./*</code> to check folder size.</li>
+<li>Remove <code>doc</code> folder which is around 4GB.</li>
+<li>Any other unnecessary folder can be removed (like fonts).</li>
 </ol>
 <h3 id="Install-nodejs-optional"><a href="#Install-nodejs-optional" class="headerlink" title="Install nodejs (optional)"></a>Install nodejs (optional)</h3><p>We need script runtime to excute jobs. We chose nodejs to run jobs and fnm to install node.</p>
 <p>You can pick any language you prefered and install them on this image.</p>
@@ -217,7 +218,18 @@
 
 <h3 id="Check-every-thing-is-ready"><a href="#Check-every-thing-is-ready" class="headerlink" title="Check every thing is ready"></a>Check every thing is ready</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pandoc -v</span><br><span class="line">tlmgr --version</span><br><span class="line">fnm list</span><br><span class="line">node -v</span><br></pre></td></tr></table></figure>
 
-<h3 id="Sample-pandoc-script-to-generate-pdf"><a href="#Sample-pandoc-script-to-generate-pdf" class="headerlink" title="Sample pandoc script to generate pdf"></a>Sample pandoc script to generate pdf</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pandoc --toc --toc-depth=2 --verbose -s  --resource-path=src -f markdown+link_attributses -V geometry:&quot;left=2cm, top=2cm, right=2cm, bottom=2cm&quot; -V title=&quot;Test PDF&quot; -V mainfont=&quot;Symbola&quot; -V CJKmainfont=&quot;AR PL SungtiL GB&quot;  --pdf-engine=xelatex -o  test_cn.pdf src/test.md</span><br></pre></td></tr></table></figure>
+<h3 id="Commit-docker-image-amp-push-to-hub"><a href="#Commit-docker-image-amp-push-to-hub" class="headerlink" title="Commit docker image &amp; push to hub"></a>Commit docker image &amp; push to hub</h3><ul>
+<li>Get container id</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>Create a docker image in local      </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker commit CONTAINER_ID USER/REPO</span><br></pre></td></tr></table></figure></li>
+<li><p>Push to hub</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker image push USER/REPO:VERSION</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h2 id="Sample-pandoc-script-to-generate-pdf"><a href="#Sample-pandoc-script-to-generate-pdf" class="headerlink" title="Sample pandoc script to generate pdf"></a>Sample pandoc script to generate pdf</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pandoc --toc --toc-depth=2 --verbose -s  --resource-path=src -f markdown+link_attributses -V geometry:&quot;left=2cm, top=2cm, right=2cm, bottom=2cm&quot; -V title=&quot;Test PDF&quot; -V mainfont=&quot;Symbola&quot; -V CJKmainfont=&quot;AR PL SungtiL GB&quot;  --pdf-engine=xelatex -o  test_cn.pdf src/test.md</span><br></pre></td></tr></table></figure>
 
 <p>Important arguments:</p>
 <ul>
@@ -285,7 +297,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-06 12:10:24" itemprop="dateModified" datetime="2021-12-06T12:10:24+08:00">2021-12-06</time>
+                <time title="Modified: 2021-12-07 14:47:00" itemprop="dateModified" datetime="2021-12-07T14:47:00+08:00">2021-12-07</time>
               </span>
 
           
@@ -491,7 +503,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-06 12:10:24" itemprop="dateModified" datetime="2021-12-06T12:10:24+08:00">2021-12-06</time>
+                <time title="Modified: 2021-12-07 14:47:00" itemprop="dateModified" datetime="2021-12-07T14:47:00+08:00">2021-12-07</time>
               </span>
 
           

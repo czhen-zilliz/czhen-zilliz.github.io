@@ -28,7 +28,7 @@
 <meta property="og:description" content="Using pandoc to build pdf with toc in github action[toc] OverviewThis doc is written based on below listed version, any updates please refer to offical doc.pandoc 2.16.2 (2021-11-21).tlmgr revision 60">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-12-07T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-12-06T04:10:24.556Z">
+<meta property="article:modified_time" content="2021-12-07T06:47:00.679Z">
 <meta property="article:author" content="czhen">
 <meta name="twitter:card" content="summary">
 
@@ -181,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-06 12:10:24" itemprop="dateModified" datetime="2021-12-06T12:10:24+08:00">2021-12-06</time>
+                <time title="Modified: 2021-12-07 14:47:00" itemprop="dateModified" datetime="2021-12-07T14:47:00+08:00">2021-12-07</time>
               </span>
 
           
@@ -208,9 +208,10 @@
 <p>Chose proper <a target="_blank" rel="noopener" href="https://ctan.org/mirrors">site</a><br>and<br>rsync -a –delete rsync://somectan/somepath/systems/texlive/tlnet/ /your/local/dir/<br>or<br>wget –mirror –no-parent <a href="ftp://somectan/somepath/systems/texlive/tlnet/">ftp://somectan/somepath/systems/texlive/tlnet/</a> /your/local/dir</p>
 <p><em>This step might take dozens of hours, so be prepared in advanced.</em></p>
 <h3 id="Remove-useless-code"><a href="#Remove-useless-code" class="headerlink" title="Remove useless code"></a>Remove useless code</h3><ol>
-<li>Get into <code>/usr/local/texlive/2021</code></li>
-<li>Run <code>du -sh ./*</code> <code>doc</code> folder is around 4GB.</li>
-<li>Remove <code>doc</code> folder</li>
+<li>Get into <code>/usr/local/texlive/2021/texmf-dist</code>.</li>
+<li>Run <code>du -sh ./*</code> to check folder size.</li>
+<li>Remove <code>doc</code> folder which is around 4GB.</li>
+<li>Any other unnecessary folder can be removed (like fonts).</li>
 </ol>
 <h3 id="Install-nodejs-optional"><a href="#Install-nodejs-optional" class="headerlink" title="Install nodejs (optional)"></a>Install nodejs (optional)</h3><p>We need script runtime to excute jobs. We chose nodejs to run jobs and fnm to install node.</p>
 <p>You can pick any language you prefered and install them on this image.</p>
@@ -219,7 +220,18 @@
 
 <h3 id="Check-every-thing-is-ready"><a href="#Check-every-thing-is-ready" class="headerlink" title="Check every thing is ready"></a>Check every thing is ready</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pandoc -v</span><br><span class="line">tlmgr --version</span><br><span class="line">fnm list</span><br><span class="line">node -v</span><br></pre></td></tr></table></figure>
 
-<h3 id="Sample-pandoc-script-to-generate-pdf"><a href="#Sample-pandoc-script-to-generate-pdf" class="headerlink" title="Sample pandoc script to generate pdf"></a>Sample pandoc script to generate pdf</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pandoc --toc --toc-depth=2 --verbose -s  --resource-path=src -f markdown+link_attributses -V geometry:&quot;left=2cm, top=2cm, right=2cm, bottom=2cm&quot; -V title=&quot;Test PDF&quot; -V mainfont=&quot;Symbola&quot; -V CJKmainfont=&quot;AR PL SungtiL GB&quot;  --pdf-engine=xelatex -o  test_cn.pdf src/test.md</span><br></pre></td></tr></table></figure>
+<h3 id="Commit-docker-image-amp-push-to-hub"><a href="#Commit-docker-image-amp-push-to-hub" class="headerlink" title="Commit docker image &amp; push to hub"></a>Commit docker image &amp; push to hub</h3><ul>
+<li>Get container id</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>Create a docker image in local      </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker commit CONTAINER_ID USER/REPO</span><br></pre></td></tr></table></figure></li>
+<li><p>Push to hub</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker image push USER/REPO:VERSION</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h2 id="Sample-pandoc-script-to-generate-pdf"><a href="#Sample-pandoc-script-to-generate-pdf" class="headerlink" title="Sample pandoc script to generate pdf"></a>Sample pandoc script to generate pdf</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pandoc --toc --toc-depth=2 --verbose -s  --resource-path=src -f markdown+link_attributses -V geometry:&quot;left=2cm, top=2cm, right=2cm, bottom=2cm&quot; -V title=&quot;Test PDF&quot; -V mainfont=&quot;Symbola&quot; -V CJKmainfont=&quot;AR PL SungtiL GB&quot;  --pdf-engine=xelatex -o  test_cn.pdf src/test.md</span><br></pre></td></tr></table></figure>
 
 <p>Important arguments:</p>
 <ul>
@@ -314,7 +326,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Using-pandoc-to-build-pdf-with-toc-in-github-action"><span class="nav-number">1.</span> <span class="nav-text">Using pandoc to build pdf with toc in github action</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Overview"><span class="nav-number">1.1.</span> <span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Prepare-source-content"><span class="nav-number">1.2.</span> <span class="nav-text">Prepare source content</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Build-docker"><span class="nav-number">1.3.</span> <span class="nav-text">Build docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Start-a-base-ubuntu-image"><span class="nav-number">1.3.1.</span> <span class="nav-text">Start a base ubuntu image</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-pandoc"><span class="nav-number">1.3.2.</span> <span class="nav-text">Install pandoc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-texlive"><span class="nav-number">1.3.3.</span> <span class="nav-text">Install texlive</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Remove-useless-code"><span class="nav-number">1.3.4.</span> <span class="nav-text">Remove useless code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-nodejs-optional"><span class="nav-number">1.3.5.</span> <span class="nav-text">Install nodejs (optional)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Config-env-variables"><span class="nav-number">1.3.6.</span> <span class="nav-text">Config env variables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Check-every-thing-is-ready"><span class="nav-number">1.3.7.</span> <span class="nav-text">Check every thing is ready</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sample-pandoc-script-to-generate-pdf"><span class="nav-number">1.3.8.</span> <span class="nav-text">Sample pandoc script to generate pdf</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Using-pandoc-to-build-pdf-with-toc-in-github-action"><span class="nav-number">1.</span> <span class="nav-text">Using pandoc to build pdf with toc in github action</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Overview"><span class="nav-number">1.1.</span> <span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Prepare-source-content"><span class="nav-number">1.2.</span> <span class="nav-text">Prepare source content</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Build-docker"><span class="nav-number">1.3.</span> <span class="nav-text">Build docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Start-a-base-ubuntu-image"><span class="nav-number">1.3.1.</span> <span class="nav-text">Start a base ubuntu image</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-pandoc"><span class="nav-number">1.3.2.</span> <span class="nav-text">Install pandoc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-texlive"><span class="nav-number">1.3.3.</span> <span class="nav-text">Install texlive</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Remove-useless-code"><span class="nav-number">1.3.4.</span> <span class="nav-text">Remove useless code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-nodejs-optional"><span class="nav-number">1.3.5.</span> <span class="nav-text">Install nodejs (optional)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Config-env-variables"><span class="nav-number">1.3.6.</span> <span class="nav-text">Config env variables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Check-every-thing-is-ready"><span class="nav-number">1.3.7.</span> <span class="nav-text">Check every thing is ready</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Commit-docker-image-amp-push-to-hub"><span class="nav-number">1.3.8.</span> <span class="nav-text">Commit docker image &amp; push to hub</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.4.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sample-pandoc-script-to-generate-pdf"><span class="nav-number">1.5.</span> <span class="nav-text">Sample pandoc script to generate pdf</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
