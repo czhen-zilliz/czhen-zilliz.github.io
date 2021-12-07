@@ -50,9 +50,10 @@ wget --mirror --no-parent ftp://somectan/somepath/systems/texlive/tlnet/ /your/l
 *This step might take dozens of hours, so be prepared in advanced.*
 
 ### Remove useless code
-1. Get into `/usr/local/texlive/2021`
-2. Run `du -sh ./*` `doc` folder is around 4GB.
-3. Remove `doc` folder
+1. Get into `/usr/local/texlive/2021/texmf-dist`.
+2. Run `du -sh ./*` to check folder size.
+3. Remove `doc` folder which is around 4GB.
+4. Any other unnecessary folder can be removed (like fonts).
 
 ### Install nodejs (optional)
 We need script runtime to excute jobs. We chose nodejs to run jobs and fnm to install node.
@@ -80,7 +81,30 @@ fnm list
 node -v
 ```
 
-### Sample pandoc script to generate pdf
+### Commit docker image & push to hub
+
+
+* Get container id
+
+```
+docker ps
+```
+
+* Create a docker image in local      
+```
+docker commit CONTAINER_ID USER/REPO
+```
+
+* Push to hub
+```
+docker image push USER/REPO:VERSION
+```
+
+## 
+
+
+
+## Sample pandoc script to generate pdf
 
 ```shell
 pandoc --toc --toc-depth=2 --verbose -s  --resource-path=src -f markdown+link_attributses -V geometry:"left=2cm, top=2cm, right=2cm, bottom=2cm" -V title="Test PDF" -V mainfont="Symbola" -V CJKmainfont="AR PL SungtiL GB"  --pdf-engine=xelatex -o  test_cn.pdf src/test.md
